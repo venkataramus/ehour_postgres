@@ -1,0 +1,25 @@
+version: '3.4'
+volumes:
+  sqlvol:
+networks:
+  ehournet:
+services:
+  db:
+    image: postgres:11.2-alpine
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=ehour
+    volumes:
+      - sqlvol:/var/lib/postgresql/data
+      - ./app/ehour-1.4.3/sql/postgresql/install/fresh.postgre.sql:/docker-entrypoint-initdb.d/fresh.postgre.sql
+    networks:
+      - ehournet
+  ehour:
+    depends_on:
+      - db
+    image: venkataramus/ehour:postgres
+    networks:
+      - ehournet
+    ports:
+      - 8065:8080
